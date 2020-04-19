@@ -61,7 +61,7 @@ class Board:
         for i in board_list:
             new_list.append(i.board)
             new_list.append(i.spin().board)
-            new_list.append(i.spin().spin().board)
+            new_list.append(i.spin(3).board)
         for i in new_list:
             print(i)
 
