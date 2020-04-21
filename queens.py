@@ -2,7 +2,7 @@ QUEEN = 'Q'
 EMPTY = '•'
 TAB = '\t'
 NEWLINE = '\r\n'
-SIZE = 8
+SIZE = 4
 
 class Board:
     def __init__(self, size=SIZE):
@@ -17,6 +17,9 @@ class Board:
     def change(self, y, x):
         """
         Receives coordinates to change from empty to queen or from queen to empty
+        :param y: y coordinate
+        :param x: x coordinate
+        :return: None
         """
         # x = column, 0 based, left to right
         # y = row, 0 based, top to bottom
@@ -27,53 +30,56 @@ class Board:
 
     def mirrored(self):
         """
+        Returns Board with mirrored board
+        :return: Board
         """
         temp = Board()
         temp.board = [row[::-1] for row in self.board]
         return temp
 
-    def flipped(self):
-        """
-        """
-        temp = Board()
-        temp.board = self.board[::-1]
-        return temp
 
-    def spin(self, times=1):
+    def spin(self):
         """
-        Spins board clockwise, default once
+        Returns list of boards created by spinning current board 3 times.
+        :return: list of boards
         """
         temp = Board()
-        for time in range(times):
+        copy = self
+        board_list = []
+        for time in range(3):
             for row in range(SIZE):
                 for col in range(SIZE):
                     new_col = SIZE - 1 - row
                     new_row = col
-                    temp.board[new_row][new_col] = self.board[row][col]
-        return temp
+                    temp.board[new_row][new_col] = copy.board[row][col]
+            copy = temp
+            board_list.append(temp.board)
+            temp = Board()
+        return board_list
+
 
     def update_used(self):
         """
+        Updates boards used parameter with a new solution and its permutations.
+        :return: None
         """
-        board_list = [self, self.flipped(), self.mirrored(),
-                        self.flipped().mirrored()]
+        board_list = [self, self.mirrored()]
         new_list = []
         for i in board_list:
             new_list.append(i.board)
-            new_list.append(i.spin().board)
-            new_list.append(i.spin(3).board)
-        for i in new_list:
-            print(i)
+            new_list.extend(i.spin())
 
-        self.used.append(new_list)
+        self.used.extend(new_list)
 
 
     def check_used(self):
         """
         Checks if solution is a permutation of a previously found solution
+        To be called if board is full and is a viable solution.
+        :return: True if board is a permutation of a previously found solution.
+        False if not (if it's a new solution)
         """
-        # print(self.used[0])
-        print(self.board in self.used)
+        return self.board in self.used
 
 
 def main():
@@ -81,22 +87,12 @@ def main():
     b1.change(1, 1)
     b1.change(0, 0)
     b1.change(1, 0)
-    b1.change(4, 3)
+    b1.change(2, 3)
     print(b1)
-    # # b1.change(6, 6) 3) * '='
-    # # print(b1, b1.mirrored(), b1.flipped(), b1.mirrored().flipped(),
-    # #         b1.spin()
-    # # sep = (4 * SIZE -, sep=f'\n{sep}\n', end='\n')
-    # b1.update_used()
-    # b1.check_used()
-    # print(b1.board)
-    # b1 = b1.flipped()
-    # b1.check_used()
-    # print(b1.board)
-    # b1.change(3, 3)
-    # b1.check_used()
-    # print(b1.board)
-
+    b1.update_used()
+    print(b1.check_used())
+    b1.change(1, 1)
+    print(b1.check_used())
 
 
 if __name__ == '__main__':
