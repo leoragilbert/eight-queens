@@ -2,14 +2,15 @@ QUEEN = 'Q'
 EMPTY = '•'
 TAB = '\t'
 NEWLINE = '\r\n'
-SIZE = 4
+SIZE = 8
 
 class Board:
     def __init__(self, size=SIZE):
         self.size = size
         self.board = [[EMPTY for i in range(size)] for i in range(size)]
         self.used = []
-        self.full = False
+        self.solved = False
+        self.solutions = 0
 
     def __str__(self):
         return NEWLINE.join([TAB.join(row) for row in self.board])
@@ -82,17 +83,41 @@ class Board:
         return self.board in self.used
 
 
+def is_safe(board, y, x):
+    """
+    Receives a board and coordinates, checks if the coordinates are a safe
+    place for a new queen
+    :param board: Board
+    :param y: y coordinate
+    :param : x coordinate
+    :return: bool (True if the point is safe)
+    """
+    results = []
+    for i in range(x - 1, x + 2):
+        for j in range(y - 1, y + 2):
+            if i > 0 and j > 0:
+                try:
+                    results.append(board.board[j][i] == QUEEN)
+                except:
+                    pass
+    return True not in results
+
+def find_solutions(board, prev_y=0, prev_x=0):
+    """
+    Recursively finds all possible solutions to 8 queens problem.
+    :param board: Board
+    :param prev_y: y coordinate of the last queen to be placed
+    # not sure if is relevant, seems redundant
+    :param prev_x: x coordinate of previous queen
+    """
+
 def main():
     b1 = Board()
     b1.change(1, 1)
     b1.change(0, 0)
     b1.change(1, 0)
-    b1.change(2, 3)
+    b1.change(4, 3)
     print(b1)
-    b1.update_used()
-    print(b1.check_used())
-    b1.change(1, 1)
-    print(b1.check_used())
 
 
 if __name__ == '__main__':
