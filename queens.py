@@ -8,9 +8,6 @@ class Board:
     def __init__(self, size=SIZE):
         self.size = size
         self.board = [[EMPTY for i in range(size)] for i in range(size)]
-        self.used = []
-        self.solved = False
-        self.solutions = 0
 
     def __str__(self):
         return NEWLINE.join([TAB.join(row) for row in self.board])
@@ -24,10 +21,13 @@ class Board:
         """
         # x = column, 0 based, left to right
         # y = row, 0 based, top to bottom
+        temp = self
         if self.board[y][x] == EMPTY:
-            self.board[y][x] = QUEEN
+            temp.board[y][x] = QUEEN
         else:
-            self.board[y][x] = EMPTY
+            temp.board[y][x] = EMPTY
+        return temp
+
 
     def mirrored(self):
         """
@@ -70,17 +70,30 @@ class Board:
             new_list.append(i.board)
             new_list.extend(i.spin())
 
-        self.used.extend(new_list)
+        # self.used.extend(new_list)
+        return new_list
 
 
-    def check_used(self):
+    def check_used(self, used):
         """
         Checks if solution is a permutation of a previously found solution
         To be called if board is full and is a viable solution.
+        :param used: list of boards
         :return: True if board is a permutation of a previously found solution.
         False if not (if it's a new solution)
         """
-        return self.board in self.used
+        return self.board in used
+
+
+    def check_solved(self):
+        """
+        Checks if board is solved
+        :return: bool
+        """
+        for row in self.board:
+            if QUEEN not in row:
+                return False
+        return True
 
 
 def is_safe(board, y, x):
@@ -93,31 +106,31 @@ def is_safe(board, y, x):
     :return: bool (True if the point is safe)
     """
     results = []
-    for i in range(x - 1, x + 2):
-        for j in range(y - 1, y + 2):
-            if i > 0 and j > 0:
+    for i in range(x - board.size, x + board.size + 1):
+        for j in range(y - board.size, y + board.size + 1):
+            if i >= 0 and j >= 0 and abs(i - x) == abs(j - y) or \
+               i == x or j == y:
                 try:
                     results.append(board.board[j][i] == QUEEN)
                 except:
                     pass
     return True not in results
 
-def find_solutions(board, prev_y=0, prev_x=0):
+def find_solutions(board, row=0, found=0, used=[]):
     """
     Recursively finds all possible solutions to 8 queens problem.
     :param board: Board
-    :param prev_y: y coordinate of the last queen to be placed
-    # not sure if is relevant, seems redundant
-    :param prev_x: x coordinate of previous queen
+    :param found: amount of solutions that have been found
+    :param used: used boards
+    :param row: current row
+    :return: number of found solutions
     """
+
 
 def main():
     b1 = Board()
-    b1.change(1, 1)
-    b1.change(0, 0)
-    b1.change(1, 0)
-    b1.change(4, 3)
-    print(b1)
+    find_solutions(b1)
+    # print(b1.solutions)
 
 
 if __name__ == '__main__':
