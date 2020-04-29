@@ -1,8 +1,9 @@
 QUEEN = 'Q'
 EMPTY = '•'
-TAB = '\t'
+TAB = ' '
 NEWLINE = '\r\n'
 SIZE = 8
+
 
 class Board:
     def __init__(self, size=SIZE):
@@ -14,7 +15,8 @@ class Board:
 
     def change(self, y, x):
         """
-        Receives coordinates to change from empty to queen or from queen to empty
+        Receives coordinates to change from empty to queen or from queen to
+        empty
         :param y: y coordinate
         :param x: x coordinate
         :return: None
@@ -28,7 +30,6 @@ class Board:
             temp.board[y][x] = EMPTY
         return temp
 
-
     def mirrored(self):
         """
         Returns Board with mirrored board
@@ -37,7 +38,6 @@ class Board:
         temp = Board()
         temp.board = [row[::-1] for row in self.board]
         return temp
-
 
     def spin(self):
         """
@@ -58,7 +58,6 @@ class Board:
             temp = Board()
         return board_list
 
-
     def update_used(self):
         """
         Updates boards used parameter with a new solution and its permutations.
@@ -73,7 +72,6 @@ class Board:
         # self.used.extend(new_list)
         return new_list
 
-
     def check_used(self, used):
         """
         Checks if solution is a permutation of a previously found solution
@@ -83,7 +81,6 @@ class Board:
         False if not (if it's a new solution)
         """
         return self.board in used
-
 
     def check_solved(self):
         """
@@ -116,21 +113,53 @@ def is_safe(board, y, x):
                     pass
     return True not in results
 
-def find_solutions(board, row=0, found=0, used=[]):
+
+def find_solutions(board, y=0, x=0, found=0, used=[]):
     """
     Recursively finds all possible solutions to 8 queens problem.
     :param board: Board
+    :param y: y coordinate (int)
+    :param x: x coordinate (int)
     :param found: amount of solutions that have been found
     :param used: used boards
-    :param row: current row
     :return: number of found solutions
     """
 
 
+def find_one(board, y=0, x=0):
+    """
+    Receives board and coordinates, recursively finds a solution to the 8
+    queens problem and prints it
+    :param board: Board
+    :param y: y coordinate (int)
+    :param x: x coordinate (int)
+    :return: None
+    """
+    if QUEEN in board.board[y]:
+        last_queen = board.board[y].index(QUEEN)
+        if last_queen < board.size - 1:
+            return find_one(board.change(y, last_queen), y, last_queen + 1)
+        else:
+            return find_one(board.change(y, last_queen), y - 1)
+    else:
+        if is_safe(board, y, x):
+            if y == board.size - 1:
+                print(board.change(y, x))
+            else:
+                return find_one(board.change(y, x), y + 1)
+                print(board, '======', sep='\n')
+        else:
+            if x < board.size - 1:
+                return find_one(board, y, x + 1)
+            else:
+                find_one(board, y - 1)
+
+
 def main():
     b1 = Board()
-    find_solutions(b1)
+    # find_solutions(b1)
     # print(b1.solutions)
+    find_one(b1)
 
 
 if __name__ == '__main__':
